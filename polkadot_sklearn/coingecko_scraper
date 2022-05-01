@@ -1,0 +1,6 @@
+from pycoingecko import CoinGeckoAPI
+import datetime
+import pandas as pd
+import time
+
+cg = CoinGeckoAPI()
