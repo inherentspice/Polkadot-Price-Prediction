@@ -11,7 +11,7 @@ def get_historical_data(cryptocurrency, start_date):
     and returns price (USD), price(sats), market cap, reddit posts for 48hours, reddit
     comments for 48hours, reddit subscribers for 48hours, reddit active accounts,
     and the alexa rank of the cryptocurrency for each day from the start date until
-    the current date."""
+    the current date. Returns a dictionary."""
 
     current = datetime.datetime.today()
     dateStr = start_date.strftime("%d-%m-%Y")
@@ -37,3 +37,10 @@ def get_historical_data(cryptocurrency, start_date):
         c += 1
         print(f'{dateStr} processed')
     return result
+
+# call function and store dictionary in 'prices'
+prices = get_historical_data('polkadot', pd.to_datetime('18-08-2020'))
+
+# convert dictionary to a DataFrame and write it into a csv file
+df = pd.DataFrame.from_dict(prices, orient='index')
+df.to_csv (r'Polkadot_historical_data.csv', header=True)
