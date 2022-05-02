@@ -2,17 +2,19 @@ from pycoingecko import CoinGeckoAPI
 import datetime
 import pandas as pd
 import time
+import requests
 
-# Instantiate coingeckoAPI
-cg = CoinGeckoAPI()
 class Scraper:
-    def get_historical_data(cryptocurrency, start_date):
+    def get_historical_data(self, cryptocurrency, start_date, update=False):
         """function that takes the name of a cryptocurrency and a start date (as datetime)
         and returns price (USD), price(sats), market cap, reddit posts for 48hours, reddit
         comments for 48hours, reddit subscribers for 48hours, reddit active accounts,
         and the alexa rank of the cryptocurrency for each day from the start date until
         the current date. Returns a dictionary."""
 
+        # Instantiate coingeckoAPI
+
+        cg = CoinGeckoAPI()
         current = datetime.datetime.today()
         dateStr = start_date.strftime("%d-%m-%Y")
         result = {}
@@ -22,7 +24,9 @@ class Scraper:
         #sleep function so that the function doesn't get blocked from the coingecko API
 
             if c != 0 and c % 40 == 0:
-                time.sleep(65)
+                print('Wait one minute')
+                time.sleep(70)
+
             dateStr = start_date.strftime("%d-%m-%Y")
             historic = cg.get_coin_history_by_id(cryptocurrency, date=dateStr, localization='false')
             result[dateStr] = {'current_price':historic.get('market_data').get('current_price').get('usd'),
@@ -36,14 +40,23 @@ class Scraper:
             start_date += datetime.timedelta(days=1)
             c += 1
             print(f'{dateStr} processed')
-        df = pd.DataFrame.from_dict(prices, orient='index')
+        df = pd.DataFrame.from_dict(result, orient='index')
+        if update == True:
+            return df
         df.to_csv(r'Polkadot_historical_data.csv', header=True)
         return
 
+    def get_fear_and_greed(self, limit=622):
+        url = f"https://api.alternative.me/fng/?limit={limit}&date_format=cn"
+        api_data = requests.get(url).json()
+        df = pd.DataFrame(columns=['Date', 'Value', 'Value_classification'])
+        for i in api_data['data']:
+            timestamp = i.get('timestamp')
+            value = i.get('value')
+            value_classification = i.get('value_classification')
+            df.loc[df.shape[0]] = {'Date':timestamp, 'Value':value, 'Value_classification':value_classification}
+        df.to_csv(r'Bitcoin_fear_and_greed.csv', header=True)
+        return
 
-# call function and store dictionary in 'prices'
-# prices = get_historical_data('polkadot', pd.to_datetime('19-08-2020'))
-
-# convert dictionary to a DataFrame and write it into a csv file
-# df = pd.DataFrame.from_dict(prices, orient='index')
-# df.to_csv (r'Polkadot_historical_data.csv', header=True)
+# Scraper().get_fear_and_greed()
+# Scraper().get_historical_data('polkadot', pd.to_datetime('19-08-2020'))
