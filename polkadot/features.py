@@ -32,7 +32,7 @@ class Dataframe:
         # create target
         features['predict'] = features['current_price'].shift(-2)
         if classification == True:
-            features['predict'] = pd.Series(np.where(features['predict'].values < features['predict'].shift(-1), 0, 1),
+            features['predict'] = pd.Series(np.where(features['predict'].values < features['current_price'], 0, 1),
                                             features.index)
 
         # create features
