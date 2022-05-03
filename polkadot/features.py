@@ -48,5 +48,5 @@ class Dataframe:
         features['sats_ema20'] = features['current_price_sats'].ewm(span=20, adjust=False).mean()
         features['sats_ema50'] = features['current_price_sats'].ewm(span=50, adjust=False).mean()
         features['sats_change_3_days'] = features['current_price_sats'] - features['current_price_sats'].shift(-3)
-        # features.dropna(inplace=True)
+        features.dropna(inplace=True)
         return features
