@@ -1,3 +1,4 @@
+from sklearn.preprocessing import RobustScaler
 from data import Polkadot
 import pandas as pd
 import numpy as np
@@ -78,3 +79,10 @@ class Dataframe:
 
         features.dropna(inplace=True)
         return features
+
+    def get_scaled_features(self):
+        df = self.get_features_targets()
+        X = np.array(df.drop(columns=['predict', 'date', 'Value_classification']))
+        scaler = RobustScaler().fit(X)
+        X_scaled = scaler.transform(X)
+        return X_scaled
