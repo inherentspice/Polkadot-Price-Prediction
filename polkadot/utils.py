@@ -7,6 +7,11 @@ from sklearn.model_selection import train_test_split
 
 class Utils:
     def test_classifiers(self, X, y):
+        """This function requires an X (features)
+        and a y (target), and returns a DataFrame with
+        the names of classifiers, and their baseline score
+        of predicting y given x.
+        """
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         k_regressor = KNeighborsClassifier().fit(X_train, y_train)
         s_model = SVC().fit(X_train, y_train)
