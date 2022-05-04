@@ -36,17 +36,45 @@ class Dataframe:
                                             features.index)
 
         # create features
-        features['ema5'] = features['current_price'].ewm(span=5, adjust=False).mean()
-        features['ema20'] = features['current_price'].ewm(span=20, adjust=False).mean()
-        features['ema50'] = features['current_price'].ewm(span=50, adjust=False).mean()
+        # create price exponential moving averages
+        features['price_ema5'] = features['current_price'].ewm(span=5, adjust=False).mean()
+        features['price_ema20'] = features['current_price'].ewm(span=20, adjust=False).mean()
+        features['price_ema50'] = features['current_price'].ewm(span=50, adjust=False).mean()
 
+        # create fear and greed moving averages
+        features['fear_ema5'] = features['Value'].ewm(span=2, adjust=False).mean()
+        features['fear_ema20'] = features['Value'].ewm(span=20, adjust=False).mean()
         features['fear_ema50'] = features['Value'].ewm(span=50, adjust=False).mean()
-        features['fear_change_2_weeks'] = features['Value'] - features['Value'].shift(-14)
+
+        # create fear and greed changes
+        features['fear_change_2_days'] = features['Value'] - features['Value'].shift(2)
+        features['fear_change_1_week'] = features['Value'] - features['Value'].shift(7)
+        features['fear_change_2_weeks'] = features['Value'] - features['Value'].shift(14)
+
+        # create reddit posts moving averages
         features['reddit_post_ema5'] = features['reddit_post_48h'].ewm(span=5, adjust=False).mean()
-        features['reddit_change_2_weeks'] = features['reddit_post_48h'] - features['reddit_post_48h'].shift(-14)
+        features['reddit_post_ema20'] = features['reddit_post_48h'].ewm(span=20, adjust=False).mean()
+        features['reddit_post_ema50'] = features['reddit_post_48h'].ewm(span=50, adjust=False).mean()
+
+        #create reddit changes
+        features['reddit_change_2_days'] = features['reddit_post_48h'] - features['reddit_post_48h'].shift(2)
+        features['reddit_change_1_week'] = features['reddit_post_48h'] - features['reddit_post_48h'].shift(7)
+        features['reddit_change_2_weeks'] = features['reddit_post_48h'] - features['reddit_post_48h'].shift(14)
+
+        #create value in sats moving average
         features['sats_ema5'] = features['current_price_sats'].ewm(span=5, adjust=False).mean()
         features['sats_ema20'] = features['current_price_sats'].ewm(span=20, adjust=False).mean()
         features['sats_ema50'] = features['current_price_sats'].ewm(span=50, adjust=False).mean()
-        features['sats_change_3_days'] = features['current_price_sats'] - features['current_price_sats'].shift(-3)
+
+        #create sata changes
+        features['sats_change_2_days'] = features['current_price_sats'] - features['current_price_sats'].shift(2)
+        features['sats_change_1_week'] = features['current_price_sats'] - features['current_price_sats'].shift(7)
+        features['sats_change_2_weeks'] = features['current_price_sats'] - features['current_price_sats'].shift(14)
+
+        #create price changes
+        features['price_change_2_days'] = features['current_price'] - features['current_price'].shift(2)
+        features['price_change_1_week'] = features['current_price'] - features['current_price'].shift(7)
+        features['price_change_2_weeks'] = features['current_price'] - features['current_price'].shift(14)
+
         features.dropna(inplace=True)
         return features
