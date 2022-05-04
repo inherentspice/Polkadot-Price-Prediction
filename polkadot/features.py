@@ -26,11 +26,11 @@ class Dataframe:
         df_merged.drop(columns='Date', inplace=True)
         return df_merged
 
-    def get_features_targets(self, classification=True):
+    def get_features_targets(self, forecast_out=2, classification=True):
         features = self.get_dataframe()
 
         # create target
-        features['predict'] = features['current_price'].shift(-2)
+        features['predict'] = features['current_price'].shift(-forecast_out)
         if classification == True:
             features['predict'] = pd.Series(np.where(features['predict'].values < features['current_price'], 0, 1),
                                             features.index)
