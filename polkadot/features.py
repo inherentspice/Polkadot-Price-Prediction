@@ -77,7 +77,20 @@ class Dataframe:
         features['price_change_1_week'] = features['current_price'] - features['current_price'].shift(7)
         features['price_change_2_weeks'] = features['current_price'] - features['current_price'].shift(14)
 
-        features.dropna(inplace=True)
+        # replace null values
+        features[features['public_interest_stats'].isnull()] = 0
+        features[features['fear_change_2_days'].isnull()] = 0
+        features[features['fear_change_1_week'].isnull()] = 0
+        features[features['fear_change_2_weeks'].isnull()] = 0
+        features[features['reddit_change_2_days'].isnull()] = 0
+        features[features['reddit_change_1_week'].isnull()] = 0
+        features[features['reddit_change_2_weeks'].isnull()] = 0
+        features[features['sats_change_2_days'].isnull()] = 0
+        features[features['sats_change_1_week'].isnull()] = 0
+        features[features['sats_change_2_weeks'].isnull()] = 0
+        features[features['price_change_2_days'].isnull()] = 0
+        features[features['price_change_1_week'].isnull()] = 0
+        features[features['price_change_2_weeks'].isnull()] = 0
         return features
 
     def get_scaled_features(self):
