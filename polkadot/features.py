@@ -1,4 +1,3 @@
-from sklearn.preprocessing import RobustScaler
 from data import Polkadot
 import pandas as pd
 import numpy as np
