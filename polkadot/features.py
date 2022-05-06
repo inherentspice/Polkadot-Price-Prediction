@@ -8,12 +8,16 @@ class Dataframe:
         self.data = Polkadot().get_data()
 
     def get_coingecko(self):
+        """This function returns a pandas DataFrame.
+        It contains 9 columns of data retrieved from
+        Coingecko."""
         df = self.data.get('Coingecko')
         df.rename(columns={'Unnamed: 0': 'date'}, inplace=True)
         df['date'] = pd.to_datetime(df['date'])
         return df
 
     def get_fear_and_greed(self):
+
         df = self.data.get('Fear_and_greed')
         df.drop(columns='Unnamed: 0', inplace=True)
         df['Date'] = pd.to_datetime(df['Date'])
