@@ -35,6 +35,9 @@ class Dataframe:
         return df_merged
 
     def get_features(self, forecast_out=7, classification=True):
+        """This function returns a pandas DataFrame with
+        36 columns. It creates multiple exponential moving averages,
+        and other features, to use in making a model"""
         features = self.get_dataframe()
 
         # create target
@@ -99,35 +102,3 @@ class Dataframe:
         features['price_change_1_week'][features['price_change_1_week'].isnull()] = 0
         features['price_change_2_weeks'][features['price_change_2_weeks'].isnull()] = 0
         return features
-
-    def get_selected_features(self):
-        df = self.get_features()
-        features = pd.Series(['fear_change_2_days', 'sats_change_2_weeks', 'public_interest_stats',
-                              'price_change_1_week','fear_ema20', 'reddit_change_2_weeks', 'current_price'])
-        return df[features]
-
-    def get_scaled_features(self, select=True):
-        if select==False:
-            df = self.get_features()
-            X = np.array(df.drop(columns=['predict', 'date', 'Value_classification']))
-            scaler = RobustScaler().fit(X)
-            X_scaled = scaler.transform(X)
-            return X_scaled
-
-        df = self.get_selected_features()
-        X = np.array(df)
-        scaler = RobustScaler().fit(X)
-        X_scaled = scaler.transform(X)
-        return X_scaled
-
-    def get_target(self, forecast_out=7, classification=True):
-        targets = self.get_dataframe()
-
-        # create target
-        targets['predict'] = targets['current_price'].shift(-forecast_out)
-        if classification == True:
-            targets['predict'] = pd.Series(np.where(targets['predict'].values < targets['current_price'], 0, 1),
-                                            targets.index)
-        targets = targets['predict']
-        targets.dropna(inplace=True)
-        return np.array(targets)
