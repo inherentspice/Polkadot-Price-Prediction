@@ -17,7 +17,10 @@ class Dataframe:
         return df
 
     def get_fear_and_greed(self):
-
+        """This function returns a pandas DataFrame.
+        It contains 3 columns: Date, Value, Value_classification.
+        This data was retrieved from alternative.me Fear
+        And Greed Index for Bitcoin"""
         df = self.data.get('Fear_and_greed')
         df.drop(columns='Unnamed: 0', inplace=True)
         df['Date'] = pd.to_datetime(df['Date'])
