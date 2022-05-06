@@ -27,7 +27,7 @@ class Dataframe:
         df_merged.drop(columns='Date', inplace=True)
         return df_merged
 
-    def get_features_targets(self, forecast_out=2, classification=True):
+    def get_features_targets(self, forecast_out=7, classification=True):
         features = self.get_dataframe()
 
         # create target
@@ -78,23 +78,36 @@ class Dataframe:
         features['price_change_2_weeks'] = features['current_price'] - features['current_price'].shift(14)
 
         # replace null values
-        features[features['public_interest_stats'].isnull()] = 0
-        features[features['fear_change_2_days'].isnull()] = 0
-        features[features['fear_change_1_week'].isnull()] = 0
-        features[features['fear_change_2_weeks'].isnull()] = 0
-        features[features['reddit_change_2_days'].isnull()] = 0
-        features[features['reddit_change_1_week'].isnull()] = 0
-        features[features['reddit_change_2_weeks'].isnull()] = 0
-        features[features['sats_change_2_days'].isnull()] = 0
-        features[features['sats_change_1_week'].isnull()] = 0
-        features[features['sats_change_2_weeks'].isnull()] = 0
-        features[features['price_change_2_days'].isnull()] = 0
-        features[features['price_change_1_week'].isnull()] = 0
-        features[features['price_change_2_weeks'].isnull()] = 0
+        features['public_interest_stats'][features['public_interest_stats'].isnull()] = 0
+        features['fear_change_2_days'][features['fear_change_2_days'].isnull()] = 0
+        features['fear_change_1_week'][features['fear_change_1_week'].isnull()] = 0
+        features['fear_change_2_weeks'][features['fear_change_2_weeks'].isnull()] = 0
+        features['reddit_change_2_days'][features['reddit_change_2_days'].isnull()] = 0
+        features['reddit_change_1_week'][features['reddit_change_1_week'].isnull()] = 0
+        features['reddit_change_2_weeks'][features['reddit_change_2_weeks'].isnull()] = 0
+        features['sats_change_2_days'][features['sats_change_2_days'].isnull()] = 0
+        features['sats_change_1_week'][features['sats_change_1_week'].isnull()] = 0
+        features['sats_change_2_weeks'][features['sats_change_2_weeks'].isnull()] = 0
+        features['price_change_2_days'][features['price_change_2_days'].isnull()] = 0
+        features['price_change_1_week'][features['price_change_1_week'].isnull()] = 0
+        features['price_change_2_weeks'][features['price_change_2_weeks'].isnull()] = 0
         return features
 
-    def get_scaled_features(self):
+    def get_selected_features(self):
         df = self.get_features_targets()
+        features = pd.Series(['fear_change_2_days', 'sats_change_2_weeks', 'public_interest_stats',
+                              'price_change_2_weeks','fear_ema50', 'reddit_post_48h', 'current_price'])
+        return df[features]
+
+    def get_scaled_features(self, select=True):
+        if select==False:
+            df = self.get_features_targets()
+            X = np.array(df.drop(columns=['predict', 'date', 'Value_classification']))
+            scaler = RobustScaler().fit(X)
+            X_scaled = scaler.transform(X)
+            return X_scaled
+
+        df = self.get_selected_features()
         X = np.array(df.drop(columns=['predict', 'date', 'Value_classification']))
         scaler = RobustScaler().fit(X)
         X_scaled = scaler.transform(X)
