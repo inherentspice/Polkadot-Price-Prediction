@@ -76,7 +76,7 @@ class Dataframe:
         features['sats_ema20'] = features['current_price_sats'].ewm(span=20, adjust=False).mean()
         features['sats_ema50'] = features['current_price_sats'].ewm(span=50, adjust=False).mean()
 
-        #create sata changes
+        #create sats changes
         features['sats_change_2_days'] = features['current_price_sats'] - features['current_price_sats'].shift(2)
         features['sats_change_1_week'] = features['current_price_sats'] - features['current_price_sats'].shift(7)
         features['sats_change_2_weeks'] = features['current_price_sats'] - features['current_price_sats'].shift(14)
@@ -85,6 +85,16 @@ class Dataframe:
         features['price_change_2_days'] = features['current_price'] - features['current_price'].shift(2)
         features['price_change_1_week'] = features['current_price'] - features['current_price'].shift(7)
         features['price_change_2_weeks'] = features['current_price'] - features['current_price'].shift(14)
+
+        #create price change as a percentage
+        features['percent_change_2_days'] = features['current_price'].pct_change(periods=2)
+        features['percent_change_1_week'] = features['current_price'].pct_change(periods=7)
+        features['percent_change_2_weeks'] = features['current_price'].pct_change(periods=14)
+
+        #create change in sats value as a percentage
+        features['percent_sats_2_days'] = features['current_price_sats'].pct_change(periods=2)
+        features['percent_sats_1_week'] = features['current_price_sats'].pct_change(periods=7)
+        features['percent_sats_2_weeks'] = features['current_price_sats'].pct_change(periods=14)
 
         # replace null values
         features['public_interest_stats'][features['public_interest_stats'].isnull()] = 0
@@ -100,4 +110,10 @@ class Dataframe:
         features['price_change_2_days'][features['price_change_2_days'].isnull()] = 0
         features['price_change_1_week'][features['price_change_1_week'].isnull()] = 0
         features['price_change_2_weeks'][features['price_change_2_weeks'].isnull()] = 0
+        features['percent_change_2_days'][features['percent_change_2_days'].isnull()] = 0
+        features['percent_change_1_week'][features['percent_change_1_week'].isnull()] = 0
+        features['percent_change_2_weeks'][features['percent_change_2_weeks'].isnull()] = 0
+        features['percent_sats_2_days'][features['percent_sats_2_days'].isnull()] = 0
+        features['percent_sats_1_week'][features['percent_sats_1_week'].isnull()] = 0
+        features['percent_sats_2_weeks'][features['percent_sats_2_weeks'].isnull()] = 0
         return features
