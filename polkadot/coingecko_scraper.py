@@ -3,6 +3,8 @@ import datetime
 import pandas as pd
 import time
 import requests
+import json
+
 
 class Scraper:
     def get_historical_data(self, cryptocurrency, start_date, update=False):
@@ -56,6 +58,27 @@ class Scraper:
             value_classification = i.get('value_classification')
             df.loc[df.shape[0]] = {'Date':timestamp, 'Value':value, 'Value_classification':value_classification}
         df.to_csv(r'Bitcoin_fear_and_greed.csv', header=True)
+        return
+
+    def get_new_accounts(self, start_date):
+        url = 'https://polkadot.api.subscan.io/api/scan/daily'
+        end_date = datetime.datetime.today()
+        end_date = end_date.strftime("%d-%m-%Y")
+        headers = {'Content-Type' : 'application/json',
+                   'X-API-Key': API}
+        data_raw= {"start": start_date,
+                   "end": end_date,
+                   "format": "day",
+                   "category": "NewAccount"}
+
+        convert_to_string = json.dumps(data_raw)
+
+        response = requests.post(url, headers=headers,
+                                 data=convert_to_string).json()
+        df = pd.DataFrame(response['data']['list'])
+        df = df[['time_utc', 'total']]
+        df.rename({'total':'new_accounts'}, inplace=True)
+        df.to_csv(r'Polkadot_new_account_data.csv', header=True)
         return
 
 # Scraper().get_fear_and_greed()
