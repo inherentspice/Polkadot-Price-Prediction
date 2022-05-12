@@ -62,13 +62,15 @@ class Scraper:
         df.to_csv(r'Bitcoin_fear_and_greed.csv', header=True)
         return
 
-    def get_new_accounts(self, start_date):
-        """function that takes  a start date (as string in format [day-month-year]
+    def get_on_chain(self, start_date):
+        """function that takes  a start date (as string in format [year-month-day]
         and returns daily fees, active accounts, and new accounts for each day from the start date until
         the current date. Writes to a csv file."""
+
+        API = 'xx'
         url = 'https://polkadot.api.subscan.io/api/scan/daily'
         end_date = datetime.datetime.today()
-        end_date = end_date.strftime("%d-%m-%Y")
+        end_date = end_date.strftime("%Y-%m-%d")
         headers = {'Content-Type' : 'application/json',
                    'X-API-Key': API}
         data_new= {"start": start_date,
@@ -115,3 +117,4 @@ class Scraper:
 
 # Scraper().get_fear_and_greed()
 # Scraper().get_historical_data('polkadot', pd.to_datetime('19-08-2020'))
+# Scraper().get_on_chain('2020-08-19')
