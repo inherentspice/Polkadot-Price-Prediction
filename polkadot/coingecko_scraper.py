@@ -63,7 +63,9 @@ class Scraper:
         return
 
     def get_new_accounts(self, start_date):
-
+        """function that takes  a start date (as string in format [day-month-year]
+        and returns daily fees, active accounts, and new accounts for each day from the start date until
+        the current date. Writes to a csv file."""
         url = 'https://polkadot.api.subscan.io/api/scan/daily'
         end_date = datetime.datetime.today()
         end_date = end_date.strftime("%d-%m-%Y")
