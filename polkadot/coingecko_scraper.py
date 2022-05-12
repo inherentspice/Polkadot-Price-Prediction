@@ -4,6 +4,8 @@ import pandas as pd
 import time
 import requests
 import json
+from functools import reduce
+
 
 
 class Scraper:
@@ -61,24 +63,52 @@ class Scraper:
         return
 
     def get_new_accounts(self, start_date):
+
         url = 'https://polkadot.api.subscan.io/api/scan/daily'
         end_date = datetime.datetime.today()
         end_date = end_date.strftime("%d-%m-%Y")
         headers = {'Content-Type' : 'application/json',
                    'X-API-Key': API}
-        data_raw= {"start": start_date,
+        data_new= {"start": start_date,
                    "end": end_date,
                    "format": "day",
                    "category": "NewAccount"}
 
-        convert_to_string = json.dumps(data_raw)
+        new_string = json.dumps(data_new)
 
-        response = requests.post(url, headers=headers,
-                                 data=convert_to_string).json()
-        df = pd.DataFrame(response['data']['list'])
-        df = df[['time_utc', 'total']]
-        df.rename({'total':'new_accounts'}, inplace=True)
-        df.to_csv(r'Polkadot_new_account_data.csv', header=True)
+        response_new = requests.post(url, headers=headers,
+                                 data=new_string).json()
+
+        data_active={"start": start_date,
+                     "end": end_date,
+                     "format": "day",
+                     "category": "ActiveAccount"}
+        active_string = json.dumps(data_active)
+        response_active = requests.post(url, headers=headers, data=active_string).json()
+
+        data_fees={"start": start_date,
+                   "end": end_date,
+                   "format": "day",
+                   "category": "transfer"}
+        fees_active = json.dumps(data_fees)
+
+        response_fees = requests.post(url, headers=headers, data=fees_active).json()
+        df_new = pd.DataFrame(response_new['data']['list'])
+        df_new = df_new[['time_utc', 'total']]
+        df_new.rename({'total':'new_accounts'}, inplace=True)
+
+        df_active = pd.DataFrame(response_active['data']['list'])
+        df_active = df_active[['time_utc', 'total']]
+        df_active.rename({'total':'active_accounts'}, axis=1, inplace=True)
+
+        df_fees = pd.DataFrame(response_fees['data']['list'])
+        df_fees = df_fees[['time_utc', 'total']]
+        df_fees.rename({'total': 'fees'}, axis=1, inplace=True)
+
+        df = [df_new, df_active, df_fees]
+        df_merged = reduce(lambda  left,right: pd.merge(left,right,on=['time_utc'],
+                                            how='outer'), df)
+        df_merged.to_csv(r'Polkadot_on_chain_data.csv', header=True)
         return
 
 # Scraper().get_fear_and_greed()
