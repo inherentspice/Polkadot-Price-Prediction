@@ -9,7 +9,7 @@ class Polkadot:
         It will have two keys: 'Coingecko', 'Fear_and_greed'
         Its values should be pandas.DataFrames loaded from csv files """
         data = {}
-
+        data['On_chain'] = pd.read_csv('Polkadot_on_chain_data.csv')
         data['Coingecko'] = pd.read_csv('Polkadot_historical_data.csv')
         data['Fear_and_greed'] = pd.read_csv('Bitcoin_fear_and_greed.csv')
         return data
