@@ -1,6 +1,8 @@
 from data import Polkadot
 import pandas as pd
 import numpy as np
+from functools import reduce
+
 
 class Dataframe:
     def __init__(self):
@@ -12,7 +14,7 @@ class Dataframe:
         Coingecko."""
         df = self.data.get('Coingecko')
         df.rename(columns={'Unnamed: 0': 'date'}, inplace=True)
-        df['date'] = pd.to_datetime(df['date'])
+        df['date'] = pd.to_datetime(df['date'], dayfirst=True)
         return df
 
     def get_fear_and_greed(self):
@@ -22,15 +24,28 @@ class Dataframe:
         And Greed Index for Bitcoin"""
         df = self.data.get('Fear_and_greed')
         df.drop(columns='Unnamed: 0', inplace=True)
-        df['Date'] = pd.to_datetime(df['Date'])
-        df.sort_values(by='Date', inplace=True)
+        df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+        df.rename(columns={'Date': 'date'}, inplace=True)
+        df.sort_values(by='date', inplace=True)
+        return df
+
+    def get_on_chain(self):
+        df = self.data.get('On_chain')
+        df.drop(columns='Unnamed: 0', inplace=True)
+        df['time_utc'] = pd.to_datetime(df['time_utc'], dayfirst=True)
+        df['time_utc'] = df['time_utc'].dt.date
+        df.rename(columns={'time_utc': 'date'}, inplace=True)
+        df['date'] = pd.to_datetime(df['date'])
         return df
 
     def get_dataframe(self):
         gecko_df = self.get_coingecko()
         fear_df = self.get_fear_and_greed()
-        df_merged = gecko_df.merge(fear_df, left_on='date', right_on='Date')
-        df_merged.drop(columns='Date', inplace=True)
+        on_df = self.get_on_chain()
+        df = [gecko_df, fear_df, on_df]
+        df_merged = reduce(lambda left,right: pd.merge(left,right,on=['date'],
+                                            how='outer'), df)
+        df_merged.drop(df_merged.tail(1).index,inplace=True)
         return df_merged
 
     def get_features(self, forecast_out=7, classification=True):
