@@ -44,6 +44,9 @@ class Dataframe:
         return df
 
     def get_dataframe(self):
+        """This function returns a merged DataFrame
+        that contains each column from get_on_chain,
+        get_coingecko, and get_fear_and_greed"""
         gecko_df = self.get_coingecko()
         fear_df = self.get_fear_and_greed()
         on_df = self.get_on_chain()
