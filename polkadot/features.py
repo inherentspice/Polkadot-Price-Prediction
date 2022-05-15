@@ -19,7 +19,7 @@ class Dataframe:
 
     def get_fear_and_greed(self):
         """This function returns a pandas DataFrame.
-        It contains 3 columns: Date, Value, Value_classification.
+        It contains 3 columns: date, Value, Value_classification.
         This data was retrieved from alternative.me Fear
         And Greed Index for Bitcoin"""
         df = self.data.get('Fear_and_greed')
@@ -30,12 +30,17 @@ class Dataframe:
         return df
 
     def get_on_chain(self):
+        """This function returns a pandas DataFrame.
+        It contains 4 columns: date, total_accounts,
+        active_accounts, and fees.
+        This data was retrieved from subscan.io"""
         df = self.data.get('On_chain')
         df.drop(columns='Unnamed: 0', inplace=True)
         df['time_utc'] = pd.to_datetime(df['time_utc'], dayfirst=True)
         df['time_utc'] = df['time_utc'].dt.date
         df.rename(columns={'time_utc': 'date'}, inplace=True)
         df['date'] = pd.to_datetime(df['date'])
+        df.rename(columns={'total':'total_accounts'}, inplace=True)
         return df
 
     def get_dataframe(self):
