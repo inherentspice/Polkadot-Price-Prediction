@@ -40,7 +40,6 @@ class Dataframe:
         df['time_utc'] = df['time_utc'].dt.date
         df.rename(columns={'time_utc': 'date'}, inplace=True)
         df['date'] = pd.to_datetime(df['date'])
-        df.rename(columns={'total':'total_accounts'}, inplace=True)
         return df
 
     def get_dataframe(self):
@@ -119,24 +118,4 @@ class Dataframe:
         features['percent_sats_1_week'] = features['current_price_sats'].pct_change(periods=7)
         features['percent_sats_2_weeks'] = features['current_price_sats'].pct_change(periods=14)
 
-        # replace null values
-        features['public_interest_stats'][features['public_interest_stats'].isnull()] = 0
-        features['fear_change_2_days'][features['fear_change_2_days'].isnull()] = 0
-        features['fear_change_1_week'][features['fear_change_1_week'].isnull()] = 0
-        features['fear_change_2_weeks'][features['fear_change_2_weeks'].isnull()] = 0
-        features['reddit_change_2_days'][features['reddit_change_2_days'].isnull()] = 0
-        features['reddit_change_1_week'][features['reddit_change_1_week'].isnull()] = 0
-        features['reddit_change_2_weeks'][features['reddit_change_2_weeks'].isnull()] = 0
-        features['sats_change_2_days'][features['sats_change_2_days'].isnull()] = 0
-        features['sats_change_1_week'][features['sats_change_1_week'].isnull()] = 0
-        features['sats_change_2_weeks'][features['sats_change_2_weeks'].isnull()] = 0
-        features['price_change_2_days'][features['price_change_2_days'].isnull()] = 0
-        features['price_change_1_week'][features['price_change_1_week'].isnull()] = 0
-        features['price_change_2_weeks'][features['price_change_2_weeks'].isnull()] = 0
-        features['percent_change_2_days'][features['percent_change_2_days'].isnull()] = 0
-        features['percent_change_1_week'][features['percent_change_1_week'].isnull()] = 0
-        features['percent_change_2_weeks'][features['percent_change_2_weeks'].isnull()] = 0
-        features['percent_sats_2_days'][features['percent_sats_2_days'].isnull()] = 0
-        features['percent_sats_1_week'][features['percent_sats_1_week'].isnull()] = 0
-        features['percent_sats_2_weeks'][features['percent_sats_2_weeks'].isnull()] = 0
         return features
