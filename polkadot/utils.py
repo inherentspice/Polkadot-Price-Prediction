@@ -3,8 +3,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import RobustScaler
+from sklearn.impute import SimpleImputer
 
 class Utils:
     def test_classifiers(self, X, y):
@@ -14,21 +15,29 @@ class Utils:
         of predicting y given x.
         """
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
-                                                          test_size=0.25, random_state=42)
         scaler = RobustScaler().fit(X_train)
         X_train_scaled = scaler.transform(X_train)
-        X_val_scaled = scaler.transform(X_val)
-        X_test_scaled = scaler.transform(X_test)
-        k_regressor = KNeighborsClassifier().fit(X_train_scaled, y_train)
-        s_model = SVC().fit(X_train_scaled, y_train)
-        classifier = DecisionTreeClassifier().fit(X_train_scaled, y_train)
-        random_classifier = RandomForestClassifier().fit(X_train_scaled, y_train)
-        ada = AdaBoostClassifier().fit(X_train_scaled, y_train)
-        gradient = GradientBoostingClassifier().fit(X_train_scaled, y_train)
+
+        imp_simple = SimpleImputer()
+        imp_simple.fit(X_train)
+        X_train_scaled = imp_simple.transform(X_train)
+
+        k_regressor = KNeighborsClassifier()
+        s_model = SVC()
+        classifier = DecisionTreeClassifier()
+        random_classifier = RandomForestClassifier()
+        ada = AdaBoostClassifier()
+        gradient = GradientBoostingClassifier()
+
+        score_k = cross_val_score(k_regressor, X_train_scaled, y_train, cv=5)
+        score_s = cross_val_score(s_model, X_train_scaled, y_train, cv=5)
+        score_c = cross_val_score(classifier, X_train_scaled, y_train, cv=5)
+        score_rc = cross_val_score(random_classifier, X_train_scaled, y_train, cv=5)
+        score_a = cross_val_score(ada, X_train_scaled, y_train, cv=5)
+        score_g = cross_val_score(gradient, X_train_scaled, y_train, cv=5)
+
         scores = pd.DataFrame(columns=['scores'], index=['KNeighbors', 'Support Vector', 'Decision Tree',
                                                 'Random Forest', 'Ada Boost', 'Gradient Boost'],
-                      data=[k_regressor.score(X_val_scaled, y_val), s_model.score(X_val_scaled, y_val),
-                           classifier.score(X_val_scaled, y_val), random_classifier.score(X_val_scaled, y_val),
-                           ada.score(X_val_scaled, y_val), gradient.score(X_val_scaled, y_val)])
+                      data=[score_k.mean(), score_s.mean(), score_c.mean(), score_rc.mean(),
+                           score_a.mean(), score_g.mean()])
         return scores
