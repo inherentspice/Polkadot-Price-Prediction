@@ -66,3 +66,21 @@ class Utils:
             score.append(s)
             k_record.append(i)
         return k_record, score
+
+    def find_best_features_r_forest(X, y):
+        """Function that takes a pre-scaled X and a target y,
+        and returns two lists: the first list the value of k
+        passed into the SelectKBest method; the second list
+        is the cross-validated score for each corresponding
+        value of k used."""
+        score = list()
+        k_record = list()
+        for i in range(1, X.shape[1]):
+            select_features = SelectKBest(score_func=mutual_info_classif, k=i)
+            select_features.fit(X, y)
+            X_reduced = select_features.transform(X)
+            random = RandomForestClassifier(random_state=42)
+            s = cross_val_score(random, X_reduced, y, cv=5).mean()
+            score.append(s)
+            k_record.append(i)
+    return k_record, score
