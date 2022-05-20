@@ -8,7 +8,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.impute import SimpleImputer
 
 class Utils:
-    def test_classifiers(self, X, y):
+    def test_classifiers(self, X, y, preproc=False):
         """This function requires an X (features)
         and a y (target), and returns a DataFrame with
         the names of classifiers, and their baseline score
@@ -16,7 +16,9 @@ class Utils:
         """
 
         # split data, impute missing values, scale data for models
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                            test_size=0.2,
+                                                            random_state=42)
         imp_simple = SimpleImputer()
         imp_simple.fit(X_train)
         X_train_impute = imp_simple.transform(X_train)
@@ -25,11 +27,11 @@ class Utils:
 
         # instantiate different classifiers
         k_regressor = KNeighborsClassifier()
-        s_model = SVC()
-        classifier = DecisionTreeClassifier()
-        random_classifier = RandomForestClassifier()
-        ada = AdaBoostClassifier()
-        gradient = GradientBoostingClassifier()
+        s_model = SVC(random_state=42)
+        classifier = DecisionTreeClassifier(random_state=42)
+        random_classifier = RandomForestClassifier(random_state=42)
+        ada = AdaBoostClassifier(random_state=42)
+        gradient = GradientBoostingClassifier(random_state=42)
 
         # calculate the cross validation score for each model
         score_k = cross_val_score(k_regressor, X_train_scaled, y_train, cv=5)
