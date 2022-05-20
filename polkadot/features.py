@@ -67,6 +67,9 @@ class Dataframe:
             features['predict'] = pd.Series(np.where(features['predict'].values < features['current_price'], 0, 1),
                                             features.index)
 
+        # drop fourteen rows with no prediction
+        features.drop(features.index[-14:], inplace=True)
+
         # create features
         # create price exponential moving averages
         features['price_ema5'] = features['current_price'].ewm(span=5, adjust=False).mean()
