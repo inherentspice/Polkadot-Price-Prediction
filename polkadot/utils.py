@@ -47,3 +47,22 @@ class Utils:
                       data=[score_k.mean(), score_s.mean(), score_c.mean(), score_rc.mean(),
                            score_a.mean(), score_g.mean()])
         return scores
+
+    def find_best_features_gradient(X, y):
+        """Function that takes a pre-scaled X and a target y,
+        and returns two lists: the first list the value of k
+        passed into the SelectKBest method; the second list
+        is the cross-validated score for each corresponding
+        value of k used."""
+
+        score = list()
+        k_record = list()
+        for i in range(1, X.shape[1]):
+            select_features = SelectKBest(score_func=mutual_info_classif, k=i)
+            select_features.fit(X, y)
+            X_reduced = select_features.transform(X)
+            gradient = GradientBoostingClassifier(random_state=42)
+            s = cross_val_score(gradient, X_reduced, y, cv=5).mean()
+            score.append(s)
+            k_record.append(i)
+        return k_record, score
