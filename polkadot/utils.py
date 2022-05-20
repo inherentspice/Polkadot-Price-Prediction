@@ -6,6 +6,8 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import RobustScaler
 from sklearn.impute import SimpleImputer
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
+
 
 class Utils:
     def test_classifiers(self, X, y, preproc=False):
@@ -73,6 +75,7 @@ class Utils:
         passed into the SelectKBest method; the second list
         is the cross-validated score for each corresponding
         value of k used."""
+
         score = list()
         k_record = list()
         for i in range(1, X.shape[1]):
@@ -83,4 +86,4 @@ class Utils:
             s = cross_val_score(random, X_reduced, y, cv=5).mean()
             score.append(s)
             k_record.append(i)
-    return k_record, score
+        return k_record, score
