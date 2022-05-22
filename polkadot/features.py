@@ -55,7 +55,7 @@ class Dataframe:
         df_merged.drop(df_merged.tail(1).index,inplace=True)
         return df_merged
 
-    def get_features(self, forecast_out=7, classification=True):
+    def get_features(self, forecast_out=14, y=False, classification=True):
         """This function returns a pandas DataFrame with
         36 columns. It creates multiple exponential moving averages,
         and other features, to use in making a model"""
@@ -66,9 +66,6 @@ class Dataframe:
         if classification == True:
             features['predict'] = pd.Series(np.where(features['predict'].values < features['current_price'], 0, 1),
                                             features.index)
-
-        # drop fourteen rows with no prediction
-        features.drop(features.index[-14:], inplace=True)
 
         # create features
         # create price exponential moving averages
@@ -121,4 +118,18 @@ class Dataframe:
         features['percent_sats_1_week'] = features['current_price_sats'].pct_change(periods=7)
         features['percent_sats_2_weeks'] = features['current_price_sats'].pct_change(periods=14)
 
+        if y == True:
+            return features[-forecast_out:]
+
+        # drop fourteen rows with no prediction
+        features.drop(features.index[-forecast_out:], inplace=True)
+
         return features
+
+    def get_y_to_predict(self, forecast_out=14):
+        """This function returns the data points not used
+        in the model."""
+
+        new_y = self.get_features(forecast_out=forecast_out, y=True)
+        new_y.drop(columns='predict', inplace=True)
+        return new_y
